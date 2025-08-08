@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vladimir's Shop - Інтерактивний помічник</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+            max-width: 700px;
+            width: 90%;
+            animation: slideUp 0.8s ease-out;
+            position: relative;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .shop-logo {
+            font-size: 3.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: bounce 2s infinite;
+        }
+        
+        .welcome-text {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .question-container {
+            margin: 30px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .question {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            line-height: 1.3;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out 0.3s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out 0.6s forwards;
+        }
+        
+        .option-btn {
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .option-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option-btn:hover::before {
+            left: 100%;
+        }
+        
+        .recommendation {
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            animation: glow 2s infinite;
+        }
+        
+        .recommendation-title {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        
+        .recommendation-desc {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .shop-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .shop-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(238, 90, 82, 0.5);
+        }
+        
+        .restart-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            margin-top: 20px;
+        }
+        
+        .restart-btn:hover {
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.5);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 25px; }
+            .shop-logo { font-size: 2.8em; }
+            .question { font-size: 1.5em; }
+            .options { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="shop-logo">⚡ Vladimir's Shop</div>
+        <div class="welcome-text">Персональний помічник з підбору товарів</div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div id="questionContainer" class="question-container">
+            <div class="question" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+        </div>
+        
+        <div id="recommendation" class="recommendation hidden">
+            <div class="recommendation-title" id="recTitle"></div>
+            <div class="recommendation-desc" id="recDesc"></div>
+            <a id="shopLink" class="shop-btn" target="_blank">🛍️ Перейти до покупок</a>
+            <button class="shop-btn restart-btn" onclick="restartQuiz()">🔄 Спробувати ще раз</button>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                question: "🏠 Розкажи про своє житло:",
+                options: [
+                    { text: "Квартира в місті 🏢", points: { led: 2, desk: 2, charger: 1 } },
+                    { text: "Приватний будинок 🏡", points: { led: 3, outdoor: 2, battery: 1 } },
+                    { text: "Гуртожиток/кімната 🛏️", points: { desk: 3, charger: 2, speaker: 1 } },
+                    { text: "Дача/заміська садиба 🌳", points: { outdoor: 3, battery: 2, flashlight: 2 } }
+                ]
+            },
+            {
+                question: "⏰ Коли ти найбільш активний?",
+                options: [
+                    { text: "Ранкова пташка 🌅", points: { desk: 2, led: 1, charger: 1 } },
+                    { text: "Денний працівник ☀️", points: { charger: 2, speaker: 1, powerbank: 1 } },
+                    { text: "Вечірній тип 🌆", points: { desk: 3, led: 2, speaker: 2 } },
+                    { text: "Нічна сова 🦉", points: { desk: 3, led: 3, outdoor: 1 } }
+                ]
+            },
+            {
+                question: "🎭 Твій стиль життя:",
+                options: [
+                    { text: "Домосід-інтроверт 📚", points: { desk: 3, led: 2, speaker: 1 } },
+                    { text: "Активний мандрівник 🎒", points: { outdoor: 3, flashlight: 2, powerbank: 3 } },
+                    { text: "Тусовщик і вечірок люблю 🎉", points: { speaker: 3, powerbank: 2, led: 1 } },
+                    { text: "Спортсмен і природа 🏃‍♀️", points: { outdoor: 3, flashlight: 3, battery: 2 } }
+                ]
+            },
+            {
+                question: "📱 Твоє ставлення до гаджетів:",
+                options: [
+                    { text: "Мінімаліст - тільки необхідне 📵", points: { charger: 2, battery: 1 } },
+                    { text: "Середнячок з телефоном 📱", points: { charger: 2, powerbank: 2, speaker: 1 } },
+                    { text: "Гаджетоман з купою пристроїв 🤖", points: { charger: 3, powerbank: 3, speaker: 2 } },
+                    { text: "Фотограф/блогер 📸", points: { powerbank: 3, led: 2, outdoor: 1 } }
+                ]
+            },
+            {
+                question: "🌙 Твоя найбільша проблема?",
+                options: [
+                    { text: "Темно працювати вечорами 💻", points: { desk: 3, led: 3 } },
+                    { text: "Телефон завжди розряджений 🔋", points: { charger: 3, powerbank: 3 } },
+                    { text: "Немає музики на пікніках 🎵", points: { speaker: 3, powerbank: 1 } },
+                    { text: "Страшно йти темними вулицями 👻", points: { flashlight: 3, outdoor: 2 } }
+                ]
+            }
+        ];
+
+        const products = {
+            led: {
+                name: "💡 Світлодіодне освітлення",
+                desc: "Ідеально для тих, хто цінує якісне освітлення вдома! Енергоефективні LED лампи створять комфортну атмосферу для роботи та відпочинку.",
+                url: "https://electronica.net.ua/ua/g138936213-svetodiodnoe-osveschenie"
+            },
+            charger: {
+                name: "🔌 Зарядні пристрої для телефонів",
+                desc: "Для тих, хто завжди на зв'язку! Швидкі та надійні зарядки, щоб твої гаджети ніколи не підводили в потрібний момент.",
+                url: "https://electronica.net.ua/ua/g138936215-zaryadni-pristroyi-dlya"
+            },
+            battery: {
+                name: "🔋 Акумулятори",
+                desc: "Надійне джерело енергії для всіх твоїх пристроїв! Тривалий час роботи і стабільна потужність.",
+                url: "https://electronica.net.ua/ua/g138936217-akumulyatori"
+            },
+            desk: {
+                name: "🏮 Настільні лампи",
+                desc: "Для продуктивної роботи та затишних вечорів! Стильні лампи, які створять ідеальне освітлення для твого робочого простору.",
+                url: "https://electronica.net.ua/ua/g138936218-nastilni-lampi"
+            },
+            outdoor: {
+                name: "🔦 Ліхтарі налобні",
+                desc: "Для справжніх авантюристів! Зручні ліхтарі, які звільнять твої руки для активного відпочинку та пригод.",
+                url: "https://electronica.net.ua/ua/g138936219-fonari-nalobnye"
+            },
+            flashlight: {
+                name: "🔍 Ліхтарі ручні",
+                desc: "Надійний супутник у будь-якій ситуації! Потужні ліхтарі для безпеки та впевненості в темний час доби.",
+                url: "https://electronica.net.ua/ua/g138936220-fonari-ruchnye"
+            },
+            powerbank: {
+                name: "📱 Павербанки",
+                desc: "Для тих, хто завжди в русі! Портативна енергія, щоб твої гаджети працювали де б ти не був.",
+                url: "https://electronica.net.ua/ua/g138936221-paverbanki"
+            },
+            speaker: {
+                name: "🔊 Блютуз колонки",
+                desc: "Для справжніх меломанів! Якісний звук, який зробить будь-яку вечірку або прогулянку незабутньою.",
+                url: "https://electronica.net.ua/ua/g138936223-blyutuz-kolonki"
+            }
+        };
+
+        let currentQuestion = 0;
+        let scores = {
+            led: 0, charger: 0, battery: 0, desk: 0,
+            outdoor: 0, flashlight: 0, powerbank: 0, speaker: 0
+        };
+
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function displayQuestion() {
+            if (currentQuestion >= questions.length) {
+                showRecommendation();
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option.text;
+                btn.onclick = () => selectOption(option, index);
+                optionsContainer.appendChild(btn);
+            });
+
+            updateProgress();
+        }
+
+        function selectOption(option, index) {
+            // Додаємо бали до загального рахунку
+            Object.keys(option.points).forEach(key => {
+                scores[key] += option.points[key];
+            });
+
+            // Анімація вибору
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons[index].style.background = 'linear-gradient(45deg, #4ecdc4, #44a08d)';
+            buttons[index].style.transform = 'scale(1.05)';
+
+            setTimeout(() => {
+                currentQuestion++;
+                displayQuestion();
+            }, 300);
+        }
+
+        function showRecommendation() {
+            // Знаходимо продукт з найвищим рейтингом
+            let maxScore = 0;
+            let recommendedProduct = 'led';
+            
+            Object.keys(scores).forEach(key => {
+                if (scores[key] > maxScore) {
+                    maxScore = scores[key];
+                    recommendedProduct = key;
+                }
+            });
+
+            const product = products[recommendedProduct];
+            
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('recommendation').classList.remove('hidden');
+            document.getElementById('recTitle').textContent = product.name;
+            document.getElementById('recDesc').textContent = product.desc;
+            document.getElementById('shopLink').href = product.url;
+            
+            updateProgress();
+            document.getElementById('progressFill').style.width = '100%';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            scores = {
+                led: 0, charger: 0, battery: 0, desk: 0,
+                outdoor: 0, flashlight: 0, powerbank: 0, speaker: 0
+            };
+            
+            document.getElementById('questionContainer').classList.remove('hidden');
+            document.getElementById('recommendation').classList.add('hidden');
+            displayQuestion();
+        }
+
+        // Початок квізу
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                displayQuestion();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
